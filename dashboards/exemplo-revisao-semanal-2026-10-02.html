@@ -48,7 +48,7 @@
  --sh:0 1px 0 rgba(255,255,255,.05) inset,0 12px 32px rgba(5,10,20,.32),0 2px 6px rgba(5,10,20,.22);
  --sh-hi:0 1px 0 rgba(255,255,255,.07) inset,0 20px 44px rgba(5,10,20,.42),0 3px 8px rgba(5,10,20,.25);
  --r:16px;--sw:284px;--top:64px;--ease:cubic-bezier(.2,.8,.2,1)}
-*,*::before,*::after{box-sizing:inherit}
+*,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:calc(var(--top) + 20px)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Schibsted Grotesk",system-ui,"Segoe UI",Arial,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
  background-image:radial-gradient(1000px 520px at 92% -10%,rgba(27,193,183,.20),transparent 65%),radial-gradient(720px 420px at 18% 4%,rgba(247,147,30,.10),transparent 70%),linear-gradient(180deg,#1E2B3E 0%,#1B2636 40%,#182231 100%);
@@ -117,11 +117,11 @@ mark.hl{background:rgba(247,147,30,.38);color:#fff;border-radius:3px;padding:0 1
 .top .btn{flex:none}
 
 .wrap{max-width:1320px;margin:0 auto;padding:28px clamp(16px,3vw,44px) calc(90px + env(safe-area-inset-bottom,0px))}
-.sec{margin-top:60px;animation:rise .55s var(--ease) both}
+.sec{margin-top:44px;animation:rise .55s var(--ease) both}
 .sec:first-child{margin-top:0}
 .sec:nth-child(2){animation-delay:.05s}.sec:nth-child(3){animation-delay:.1s}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}}
-.sh2{display:flex;align-items:flex-end;justify-content:space-between;gap:14px 18px;flex-wrap:wrap;margin:0 0 20px}
+.sh2{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 18px;flex-wrap:wrap;margin:0 0 14px}
 .eyebrow{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--tq-hi);margin:0 0 6px}
 .eyebrow .num{font-size:10.5px;letter-spacing:.04em;color:var(--on-brand);background:var(--tq);border-radius:6px;padding:1px 6px}
 h2{font-size:clamp(22px,2.2vw,28px);font-weight:800;letter-spacing:-.03em;line-height:1.15;margin:0;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
@@ -204,29 +204,42 @@ h1 em{font-style:normal;color:var(--tq-hi)}
 .chips b{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:800}
 .chips button[aria-pressed="true"] b{color:var(--tq-hi)}
 .chips .av{width:20px;height:20px;font-size:8.5px;margin:-2px 0 -2px -6px}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;align-items:start}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;align-items:start}
 .card{border-left:4px solid var(--c,var(--tq));overflow:hidden}
-.card summary{padding:18px 20px 16px;display:flex;flex-direction:column;gap:12px}
+.card summary{padding:16px 18px 14px;display:flex;flex-direction:column;gap:10px}
 /* fechado: texto limitado para os cartões terem todos a mesma altura; aberto: texto completo */
 .card:not([open]) .ch h3,.mtg:not([open]) .mh h3,.mtg:not([open]) .mh .tbd{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-.card:not([open]) .cs{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.card:not([open]) .cs{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .card:not([open]) .nx p:not(.nl){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .card summary .more,.mtg summary .more{margin-top:auto}
+/* fechado: cada bloco tem altura fixa, para títulos, textos e caixas ficarem alinhados entre cartões */
+.card:not([open]) .ch{min-height:42px}
+.card:not([open]) .cs{min-height:42px}
+.card:not([open]) .nx{min-height:100px}
+.card:not([open]) .nx.none,.card:not([open]) .nx.zero{display:flex;align-items:center}
+.card:not([open]) .nx .meta{flex-wrap:nowrap;min-width:0}
+.card:not([open]) .nx .meta>.ic{min-width:0;flex:0 1 auto;white-space:nowrap}
+.card:not([open]) .nx .meta>.ic:first-child{overflow:hidden;text-overflow:ellipsis;display:block}
+.card:not([open]) .nx .meta>.ic:first-child svg{vertical-align:-2px;margin-right:5px}
+.card:not([open]) .nx .meta>.ic:not(:first-child){flex:none}
+.mtg:not([open]) .mh h3{min-height:40px}
+.mtg:not([open]) .mh>div:last-child{min-height:86px}
 .card[open]{border-color:rgba(27,193,183,.4);border-left-color:var(--c,var(--tq));box-shadow:var(--sh-hi)}
 .ch{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
 .ch h3{margin:0;font-size:16px;font-weight:800;line-height:1.3;letter-spacing:-.015em}
 .cs{margin:0;color:var(--ink);font-size:14px;line-height:1.5}
-.nx{background:rgba(10,18,28,.32);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+.nx{background:rgba(10,18,28,.32);border:1px solid var(--line);border-radius:12px;padding:9px 12px}
 .nx .nl{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--tq-hi);margin:0 0 4px}
 .nx p{margin:0 0 5px;font-size:13.5px}
 .nx.none{color:var(--or-hi);font-size:13px;font-weight:700;border-color:rgba(247,147,30,.3)}
+.nx.zero{color:var(--muted);font-size:13px;font-weight:600}
 .more{font-size:12px;font-weight:700;color:var(--muted);display:inline-flex;align-items:center;gap:7px}
 .more::before{content:"Ver detalhes"}
 .more::after{content:"";width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .2s}
 details>summary:hover .more{color:var(--tq-hi)}
 details[open]>summary .more::before{content:"Fechar detalhes"}
 details[open]>summary .more::after{transform:rotate(-135deg) translateY(-1px)}
-.cd{margin:0 20px;padding:14px 0 18px;border-top:1px solid var(--line);font-size:14px;color:var(--soft);display:flex;flex-direction:column;gap:12px;animation:rise .3s var(--ease) both}
+.cd{margin:0 18px;padding:12px 0 16px;border-top:1px solid var(--line);font-size:14px;color:var(--soft);display:flex;flex-direction:column;gap:12px;animation:rise .3s var(--ease) both}
 .cd h4,.mtg h4{margin:0 0 6px;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .cd ul{margin:0;padding-left:18px}
 .cd li{margin-bottom:4px}
@@ -300,12 +313,16 @@ a.src:hover{color:var(--tq-hi);text-decoration:none}
 .q .qp{font-size:13.5px;color:var(--soft);margin:5px 0 7px}
 
 /* ===================== 5. REUNIÕES ===================== */
-.mts{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;align-items:start}
+.mts{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;align-items:start}
 .mtg{overflow:hidden}
-.mtg>summary{padding:20px 22px 16px;display:flex;flex-direction:column;gap:14px}
+.mtg>summary{padding:16px 18px 14px;display:flex;flex-direction:column;gap:10px}
+.mtg:not([open]) .mh .tbd{-webkit-line-clamp:1}
 .mtg[open]{border-color:rgba(27,193,183,.4);box-shadow:var(--sh-hi)}
-.mtg .md{margin:0 22px;padding:14px 0 20px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:15px;animation:rise .3s var(--ease) both}
+.mtg .md{margin:0 18px;padding:12px 0 16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:15px;animation:rise .3s var(--ease) both}
 .mtg .mf{border-top:0;padding-top:0}
+.mtg .ppl small{white-space:nowrap}
+.mtg .mft{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.mtg:not([open]) .mf{flex-wrap:nowrap;white-space:nowrap;overflow:hidden;max-width:100%}
 .mtg .ppn{margin:0;font-size:13px;color:var(--soft)}
 .mh{display:flex;gap:14px;align-items:flex-start}
 .dd{flex:none;width:56px;text-align:center;border-radius:13px;padding:7px 0 8px;background:linear-gradient(160deg,rgba(27,193,183,.3),rgba(27,193,183,.08));border:1px solid rgba(27,193,183,.4)}
@@ -323,7 +340,7 @@ a.src:hover{color:var(--tq-hi);text-decoration:none}
 .pts li::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:50%;background:var(--c,var(--tq))}
 .pts li b{color:var(--ink);font-weight:700}
 .pts.dec li::before{border-radius:2px;background:var(--or)}
-.mf{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+.mf{display:flex;gap:4px 12px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
 .mf b{color:var(--ink);font-variant-numeric:tabular-nums}
 
 /* ===================== 6. RESULTADOS ===================== */
@@ -619,9 +636,9 @@ const canon=n=>TODOS.find(p=>p===n)||TODOS.find(p=>p.startsWith(n+" "))||n;
 const PAL=["#1BC1B7","#F7931E","#8FB3FF","#C9A7F5","#7FD39A","#F2C14E","#F28AB2","#9BC4D0"];
 const corP=n=>{n=canon(n);let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))>>>0;return PAL[h%PAL.length];};
 const ini=n=>canon(n).replace(/\(.*?\)/g,"").trim().split(/\s+/).filter(w=>w.length>2||/^[A-ZÁÉÍÓÚ]/.test(w)).slice(0,2).map(w=>w[0]).join("").toUpperCase();
-const av=n=>n?`<span class="av" style="background:${corP(n)}" title="${canon(n)}">${ini(n)}</span>`:`<span class="av no" title="Sem responsável">?</span>`;
+const av=n=>n?`<span class="av" style="background:${corP(n)}" title="${canon(n)}">${ini(n)}</span>`:`<span class="av no" title="Responsável não identificado pelo Fireflies">?</span>`;
 
-const quem=q=>q?`<span class="ic">${IC.user}${q}</span>`:`<span class="ic tbd">${IC.user}Responsável por definir</span>`;
+const quem=q=>q?`<span class="ic">${IC.user}${q}</span>`:`<span class="ic tbd">${IC.user}Responsável não identificado pelo Fireflies</span>`;
 const prazo=p=>!p?`<span class="ic">${IC.cal}Sem prazo</span>`:p<G?`<span class="ic late">${IC.cal}Venceu ${ddmm(p)}</span>`:`<span class="ic">${IC.cal}Vence ${ddmm(p)}</span>`;
 const porPrazo=(a,b)=>(a.p||"9999")<(b.p||"9999")?-1:(a.p||"9999")>(b.p||"9999")?1:0;
 const cardById=Object.fromEntries(CARDS.map(c=>[c.id,c]));
@@ -641,7 +658,7 @@ const nGr=g=>TASKS.filter(t=>grupo(t)===g).length;
 const EQUIPA=["Daniel Godinho","Maria João","Guilherme","Suzyany","Suzy","Adriele"];
 const daEquipa=n=>!!n&&[n,canon(n)].some(x=>EQUIPA.some(e=>x===e||x.startsWith(e+" ")));
 const tipoT=t=>!t.q?"sr":daEquipa(t.q)?"eq":"cl";
-const TIPOS=[["eq","Equipa","var(--tq)",true],["cl","Clientes e outros","var(--or)",false],["sr","Sem responsável","var(--none)",false]];
+const TIPOS=[["eq","Equipa","var(--tq)",true],["cl","Clientes e outros","var(--or)",false],["sr","Não identificado","var(--none)",false]];
 /* carga por pessoa (tarefas em aberto); "" = sem responsável */
 const CARGA=(()=>{const cont={};abertas.forEach(t=>{const n=t.q?canon(t.q):"";cont[n]=(cont[n]||0)+1;});
  return Object.entries(cont).sort((a,b)=>(a[0]===""?1:b[0]===""?-1:b[1]-a[1]));})();
@@ -660,7 +677,7 @@ const kpi=(cls,ic,lab,val,sub,go)=>`<button type="button" class="kpi panel lift$
 $("kpis").innerHTML=
  kpi("",IC.mic16,"Reuniões analisadas",Object.keys(M).length,`<span class="ks">${hm(totMin)} em chamada</span>`,"reunioes")+
  kpi("",IC.dec16,"Decisões tomadas",DECS.length,`<span class="ks">com minuto na gravação</span>`,"fontes")+
- kpi(semResp?" warn":"",IC.list16,"Tarefas em aberto",abertas.length,semResp?`<em>${semResp} sem responsável</em>`:`<span class="ks">todas com responsável</span>`,"plano:todas")+
+ kpi(semResp?" warn":"",IC.list16,"Tarefas em aberto",abertas.length,semResp?`<em>${semResp} sem responsável identificado</em>`:`<span class="ks">todas com responsável</span>`,"plano:todas")+
  kpi(nVenc?" crit":"",IC.cal16,"Tarefas vencidas",nVenc,`<span class="ks">${nVenc?"rever prazos":"nenhum prazo falhado"}</span>`,nVenc?"plano:venc":"plano")+
  kpi(nBloq+nAt?" warn":"",IC.alert16,"Pontos de atenção",nBloq+nAt,nBloq?`<em>${nBloq} bloqueados</em>`:`<span class="ks">de ${CARDS.length} clientes e projetos</span>`,"clientes:atencao");
 
@@ -696,8 +713,8 @@ $("mts").innerHTML=mOrd.map(k=>{const m=M[k];
   <div class="mh"><div class="dd"><span>${dia(m.data)}</span><b>${m.data.slice(8,10)}</b></div>
    <div><h3><a href="${url(k)}" target="_blank" rel="noopener">${m.nome}</a></h3>
    <div class="meta"><span class="ic">${IC.clock}${m.hora}, ${m.dur} min</span>${m.nota?`<span class="tbd">${m.nota}</span>`:""}</div></div></div>
-  ${pp.length?`<div class="ppl"><div class="avs">${pp.map(p=>av(p)).join("")}</div><small>${pp.length} ${pp.length===1?"participante":"participantes"}</small></div>`:`<div class="ppl tbd">Participantes por preencher</div>`}
-  <div class="mf"><span><b>${ts.length}</b> ${ts.length===1?"tarefa":"tarefas"}</span>${tsr?`<span class="tbd"><b style="color:inherit">${tsr}</b> sem responsável</span>`:""}<span><b>${ds.length}</b> ${ds.length===1?"decisão":"decisões"}</span><span><b>${cs.length}</b> ${cs.length===1?"ponto principal":"pontos principais"}</span></div>
+  <div class="mft">${pp.length?`<div class="ppl"><div class="avs">${pp.map(p=>av(p)).join("")}</div><small>${pp.length} ${pp.length===1?"participante":"participantes"}</small></div>`:`<div class="ppl tbd">Participantes por preencher</div>`}
+  <div class="mf"><span><b>${ts.length}</b> ${ts.length===1?"tarefa":"tarefas"}</span>${tsr?`<span class="tbd"><b style="color:inherit">${tsr}</b> sem responsável</span>`:""}<span><b>${ds.length}</b> ${ds.length===1?"decisão":"decisões"}</span></div></div>
   <span class="more"></span></summary>
   <div class="md">
   ${pp.length?`<div><h4>Participantes</h4><p class="ppn">${pp.join(", ")}</p></div>`:""}
@@ -719,7 +736,7 @@ $("cards").innerHTML=cartoes.map(c=>{
  const ts=abertas.filter(t=>t.k===c.id).sort(porPrazo),t=ts[0];
  const ds=DECS.filter(d=>d.c===c.id);
  const nx=t?`<div class="nx"><p class="nl">Próxima ação</p><p>${INF(t.o)}</p><div class="meta">${quem(t.q)}${prazo(t.p)}</div></div>`
-  :(c.e==="bloq"||c.e==="atencao")?`<div class="nx none">Sem próxima ação definida</div>`:"";
+  :(c.e==="bloq"||c.e==="atencao")?`<div class="nx none">Sem próxima ação definida</div>`:`<div class="nx zero">Sem tarefas em aberto</div>`;
  return `<details class="card panel lift" data-e="${c.e}" id="card-${c.id}" style="--c:${COR[c.e]||"var(--none)"}"><summary>
   <div class="ch"><h3>${c.h}</h3><span class="chip ${SC[c.e]||""}">${EST[c.e]||c.e}</span></div>
   <p class="cs">${INF(c.o)}</p>${nx}<span class="more"></span></summary>
@@ -738,7 +755,7 @@ const linhaT=t=>{const g=grupo(t);
 const subT=ts=>GR.filter(([g])=>g!=="feita").map(([g,nome])=>{const x=ts.filter(t=>grupo(t)===g).sort(porPrazo);
  return x.length?`<div class="tsg" data-g="${g}"><p class="tsh"><span class="dot g-${g}"></span>${nome} <span class="cnt">${x.length}</span></p><ul class="tl">${x.map(linhaT).join("")}</ul></div>`:"";}).join("");
 $("tasks").innerHTML=(TIPOS.map(([tp,nome,cor,aberto])=>{const ts=abertas.filter(t=>tipoT(t)===tp);if(!ts.length)return"";
- return `<details class="tg panel" data-blk="${tp}"${aberto?" open":""}><summary><span class="dot" style="background:${cor}"></span>${nome} <span class="cnt">${ts.length}</span><span class="sub">${tp==="eq"?"tarefas da equipa Outlier":tp==="cl"?"clientes, contactos e parceiros":"falta definir quem faz"}</span></summary>${subT(ts)}</details>`;}).join("")+
+ return `<details class="tg panel" data-blk="${tp}"${aberto?" open":""}><summary><span class="dot" style="background:${cor}"></span>${nome} <span class="cnt">${ts.length}</span><span class="sub">${tp==="eq"?"tarefas da equipa Outlier":tp==="cl"?"clientes, contactos e parceiros":"responsável não identificado pelo Fireflies"}</span></summary>${subT(ts)}</details>`;}).join("")+
  (feitas.length?`<details class="tg panel" data-blk="feita"><summary><span class="dot g-feita"></span>Concluídas, confirmadas em reunião <span class="cnt">${feitas.length}</span></summary><div class="tsg" data-g="feita"><ul class="tl">${feitas.map(linhaT).join("")}</ul></div></details>`:""))||`<p class="vazio">Nenhuma tarefa identificada.</p>`;
 /* filtro por estado (prazo) */
 const TF=[["","Todas",abertas.length],...GR.map(([g,,,curto])=>[g,curto,g==="feita"?feitas.length:abertas.filter(t=>grupo(t)===g).length])];
@@ -751,7 +768,7 @@ $("pfilt").innerHTML=`<span class="cl">Responsável</span><button type="button" 
  `<select class="psel" id="psel" aria-label="Filtrar por pessoa"><option value="">Escolher pessoa</option>${TIPOS.filter(([tp])=>tp!=="sr"&&cargaDe(tp).length).map(([tp,nome])=>`<optgroup label="${nome}">${cargaDe(tp).map(([n,c])=>`<option value="${n}">${n} (${c})</option>`).join("")}</optgroup>`).join("")}</select>`;
 /* carga por pessoa (clicar filtra o plano) */
 $("load").innerHTML=`<h3>Tarefas por pessoa</h3><p>Tarefas em aberto atribuídas nesta semana. Clica para filtrar.</p>`+(CARGA.length?(()=>{const mx=Math.max(1,...CARGA.map(x=>x[1]));
- const lr=([n,c])=>`<button type="button" class="lr${n?"":" sr"}" data-p="${n}" aria-pressed="false">${av(n)}<span class="nm">${n||"Sem responsável"}</span><span class="ct">${c}</span><span class="bar"><i style="width:${Math.round(c/mx*100)}%;${n?`background:${corP(n)}`:""}"></i></span></button>`;
+ const lr=([n,c])=>`<button type="button" class="lr${n?"":" sr"}" data-p="${n}" aria-pressed="false">${av(n)}<span class="nm">${n||"Não identificado"}</span><span class="ct">${c}</span><span class="bar"><i style="width:${Math.round(c/mx*100)}%;${n?`background:${corP(n)}`:""}"></i></span></button>`;
  return TIPOS.filter(([tp])=>tp!=="sr"&&cargaDe(tp).length).map(([tp,nome,cor,aberto])=>`<details class="lgp"${aberto?" open":""}><summary><span class="dot" style="background:${cor}"></span>${nome} <span class="cnt">${cargaDe(tp).reduce((s,x)=>s+x[1],0)}</span></summary>${cargaDe(tp).map(lr).join("")}</details>`).join("")+
   cargaDe("sr").map(lr).join("");})():`<p class="vazio">Sem tarefas em aberto.</p>`);
 
@@ -776,7 +793,7 @@ $("fin").innerHTML=
   <li><strong>Resultados em destaque:</strong> números ditos numa reunião, com o minuto de onde vêm.</li>
   <li><strong>Resumo por reunião:</strong> junta os clientes e projetos, as decisões e as tarefas que têm origem em cada reunião.</li>
   <li><strong>Decisões:</strong> só o que ficou fechado de forma explícita numa reunião.</li>
-  <li><strong>Tarefas:</strong> pedidos com um resultado concreto. Só têm responsável quando alguém o diz ou quando havia uma única pessoa da Outlier na chamada. Só aparecem como concluídas com confirmação numa reunião.</li>
+  <li><strong>Tarefas:</strong> pedidos com um resultado concreto. Têm responsável quando ele vem nos itens de ação do Fireflies, quando é dito na reunião ou quando havia uma única pessoa da Outlier na chamada. Nos outros casos aparece "Responsável não identificado pelo Fireflies". Só aparecem como concluídas com confirmação numa reunião.</li>
   <li><strong>Prioridades e pergunta:</strong> leitura da revisão, não algo decidido numa reunião.</li>
   <li><strong>Fontes:</strong> cada item liga à reunião de onde vem. Decisões e números levam também o minuto.</li>
   <li><strong>Marcas:</strong> sem marca, foi dito; "inferência" é uma leitura da revisão; "a confirmar" é um nome, responsável ou minuto que a transcrição não permite confirmar.</li></ul>`+
@@ -945,7 +962,7 @@ $("b-csv").addEventListener("click",()=>{
  const nomeG=Object.fromEntries(GR.map(([g,,,c])=>[g,c]));
  const esc=v=>{v=String(v??"").replace(/\[inferência\]/g,"(inferência)");return /[";\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v;};
  const L=[["Tarefa","Responsável","Prazo","Estado","Cliente ou projeto","Reunião","Minuto","Nota","Aberta desde","Confirmada em"]];
- [...TASKS].sort(porPrazo).forEach(t=>L.push([t.o,t.q?canon(t.q):"Sem responsável",t.p||"",nomeG[grupo(t)],t.k&&cardById[t.k]?cardById[t.k].h:"Interno",
+ [...TASKS].sort(porPrazo).forEach(t=>L.push([t.o,t.q?canon(t.q):"Não identificado pelo Fireflies",t.p||"",nomeG[grupo(t)],t.k&&cardById[t.k]?cardById[t.k].h:"Interno",
   t.r&&M[t.r[0]]?M[t.r[0]].nome:"",t.r&&t.r[1]||"",t.s||"",t.desde||"",t.feita&&M[t.feita[0]]?`${M[t.feita[0]].nome} ${t.feita[1]||""}`.trim():""]));
  const b=new Blob(["﻿"+L.map(r=>r.map(esc).join(";")).join("\r\n")],{type:"text/csv;charset=utf-8"});
  const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`tarefas_${SEMANA.inicio}_${SEMANA.fim}.csv`;document.body.append(a);a.click();
