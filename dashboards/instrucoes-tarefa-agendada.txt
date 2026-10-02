@@ -2,6 +2,8 @@ Usa a skill revisao-semanal para fazer a revisão semanal das reuniões da Outli
 
 Período: de segunda-feira desta semana até à data de execução.
 
+Para os responsáveis das tarefas, segues a regra RESPONSÁVEIS DAS TAREFAS das instruções do projeto, que prevalece sobre a skill: os itens de ação do Fireflies dão o responsável confirmado; fora deles, o responsável é quem mencionou a tarefa, marcado como provável.
+
 Corres sem supervisão. Não fazes perguntas: quando tiveres uma dúvida, decides pelo critério mais conservador e registas-a nas ressalvas.
 
 AVISO FINAL
@@ -11,7 +13,7 @@ Terminas com um aviso claro, com:
 - o nome de pasta sugerido: "Revisão semanal AAAA-MM-DD";
 - a lista das reuniões analisadas, cada uma com data, título e o link da página no Fireflies;
 - as reuniões excluídas, só pela contagem, e as reuniões sem transcrição disponível ou lidas só em parte;
-- as dúvidas que ficaram por resolver: nomes a confirmar, tarefas sem responsável (quantas e quais), contradições encontradas e pontos que o script assinalou e que resolveste retirando o item.
+- as dúvidas que ficaram por resolver: nomes a confirmar, tarefas sem responsável (quantas e quais), tarefas com responsável provável (quantas), contradições encontradas e pontos que o script assinalou e que resolveste retirando o item.
 
 DASHBOARD COMO LINK
 Corres o script da skill com a opção --publicar, que cria também a cópia para publicar (revisao-semanal-AAAA-MM-DD-publicar.html), já sem doctype, html, head, body e metas. Não preparas essa cópia à mão. Publicas essa cópia como página privada com a ferramenta Artifact, com o título "Revisão semanal AAAA-MM-DD", o ícone "calendar" e uma descrição de uma frase com o período. Não tentes anexar o HTML ao email, porque o anexo tem de ser escrito à mão em base64 e pode ficar corrompido.
