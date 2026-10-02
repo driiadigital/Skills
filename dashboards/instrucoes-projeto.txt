@@ -18,4 +18,4 @@ Esta regra substitui a regra da skill revisao-semanal sobre responsáveis (q).
 3. Continuam a ser confirmados, sem marca, os responsáveis ditos de forma explícita na conversa e os casos em que havia uma única pessoa da Outlier na chamada.
 4. Se a transcrição disser explicitamente outra pessoa que não a dos itens de ação, fica a pessoa dos itens de ação e o campo s leva "Responsável a confirmar: na transcrição aparece [nome]."
 5. Uma tarefa tem um só responsável. Se os itens de ação ou a conversa juntarem duas pessoas, fica a primeira indicada. Grupos ("equipa comercial", "Nélia e José") não servem de responsável: fica a pessoa principal ou, se não for possível, q: null.
-6. q: null só fica quando a tarefa não está nos itens de ação e não é possível saber quem a mencionou.
+6. q: null só fica quando a tarefa não está nos itens de ação e não é possível saber quem a mencionou. Nesse caso o dashboard mostra automaticamente "Responsável não identificado pelo Fireflies"; não escreves esse texto nos dados.
