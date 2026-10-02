@@ -24,8 +24,6 @@
   - Referências: [reunião, minuto]. Decisões e tarefas concluídas têm de ter minuto. No resto, o minuto é opcional (null).
   - Datas em AAAA-MM-DD. "Venceu" é calculado a partir de SEMANA.gerado, nunca do dia em que a página é aberta.
   - Tarefa sem responsável: q: null. Tarefa ligada a um cliente: k com o id do cartão.
-  - Responsável provável: q com o nome e qp com a origem: "fireflies" (itens de ação do resumo do Fireflies)
-    ou "mencionou" (a pessoa que mencionou a tarefa). Sem qp, o responsável foi confirmado na reunião.
   - Tarefa concluída: só com confirmação numa reunião, no campo feita: [reunião, minuto].
   - Tarefa de uma semana anterior: mantém o campo desde com a data em que apareceu pela primeira vez.
   - Estados dos cartões (campo e): bloq, atencao, avanca, semacao.
@@ -265,11 +263,6 @@ a.src:hover{color:var(--tq-hi);text-decoration:none}
 .task p{margin:0 0 4px;font-weight:600;font-size:14.5px}
 .av{width:26px;height:26px;border-radius:50%;display:inline-grid;place-items:center;font-size:10.5px;font-weight:800;color:var(--on-brand);flex:none}
 .av.no{background:transparent;border:1.5px dashed var(--or);color:var(--or-hi)}
-.av.pv{outline:1.5px dashed var(--or);outline-offset:2px}
-.pv{margin-left:6px;font-size:10.5px;font-weight:800;letter-spacing:.02em;color:var(--or-hi);background:var(--orbg);border:1px solid rgba(247,147,30,.35);border-radius:999px;padding:0 7px}
-.pvn{font-size:11px;font-weight:700;color:var(--or-hi)}
-.dk{display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--k);margin-right:6px}
-.dbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.dbs .btn{padding:5px 10px;font-size:12px}
 .g-venc{background:var(--bad)}.g-prox{background:var(--or)}.g-depois{background:var(--tq)}.g-semdata{background:var(--none)}.g-feita{background:var(--tq)}
 .ant{color:var(--or-hi);font-weight:700}
 .vazio{padding:4px 0;color:var(--muted)}
@@ -605,18 +598,16 @@ const canon=n=>TODOS.find(p=>p===n)||TODOS.find(p=>p.startsWith(n+" "))||n;
 const PAL=["#1BC1B7","#F7931E","#8FB3FF","#C9A7F5","#7FD39A","#F2C14E","#F28AB2","#9BC4D0"];
 const corP=n=>{n=canon(n);let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))>>>0;return PAL[h%PAL.length];};
 const ini=n=>canon(n).split(/\s+/).filter(w=>w.length>2||/^[A-ZÁÉÍÓÚ]/.test(w)).slice(0,2).map(w=>w[0]).join("").toUpperCase();
-const av=(n,qp)=>n?`<span class="av${qp?" pv":""}" style="background:${corP(n)}" title="${canon(n)}${qp?" (provável)":""}">${ini(n)}</span>`:`<span class="av no" title="Sem responsável">?</span>`;
+const av=n=>n?`<span class="av" style="background:${corP(n)}" title="${canon(n)}">${ini(n)}</span>`:`<span class="av no" title="Sem responsável">?</span>`;
 
-/* responsável provável (qp): "fireflies" = itens de ação do Fireflies; "mencionou" = quem mencionou a tarefa */
-const QP={fireflies:"Responsável provável: atribuído nos itens de ação do Fireflies",mencionou:"Responsável provável: foi quem mencionou a tarefa na reunião"};
-const quem=(q,qp)=>!q?`<span class="ic tbd">${IC.user}Responsável por definir</span>`:qp?`<span class="ic" title="${QP[qp]||"Responsável provável"}">${IC.user}${q}<span class="pv">provável</span></span>`:`<span class="ic">${IC.user}${q}</span>`;
+const quem=q=>q?`<span class="ic">${IC.user}${q}</span>`:`<span class="ic tbd">${IC.user}Responsável por definir</span>`;
 const prazo=p=>!p?`<span class="ic">${IC.cal}Sem prazo</span>`:p<G?`<span class="ic late">${IC.cal}Venceu ${ddmm(p)}</span>`:`<span class="ic">${IC.cal}Vence ${ddmm(p)}</span>`;
 const porPrazo=(a,b)=>(a.p||"9999")<(b.p||"9999")?-1:(a.p||"9999")>(b.p||"9999")?1:0;
 const cardById=Object.fromEntries(CARDS.map(c=>[c.id,c]));
 const abertas=TASKS.filter(t=>!t.feita),feitas=TASKS.filter(t=>t.feita);
 const lim=addDias(G,7);
 const grupo=t=>t.feita?"feita":!t.p?"semdata":t.p<G?"venc":t.p<=lim?"prox":"depois";
-const semResp=abertas.filter(t=>!t.q).length,nProv=abertas.filter(t=>t.q&&t.qp).length;
+const semResp=abertas.filter(t=>!t.q).length;
 const nVenc=abertas.filter(t=>grupo(t)==="venc").length;
 const nBloq=CARDS.filter(c=>c.e==="bloq").length,nAt=CARDS.filter(c=>c.e==="atencao").length;
 const DEST=typeof DESTAQUES!=="undefined"?DESTAQUES:[];
@@ -626,9 +617,8 @@ const totMin=Object.values(M).reduce((s,m)=>s+(m.dur||0),0);
 const GR=[["venc","Vencidas",true,"Vencidas"],["prox",`Próximos 7 dias, até ${ddmm(lim)}`,true,"Próximos 7 dias"],["depois","Mais tarde",true,"Mais tarde"],["semdata","Sem prazo",true,"Sem prazo"],["feita","Concluídas, confirmadas em reunião",false,"Concluídas"]];
 const nGr=g=>TASKS.filter(t=>grupo(t)===g).length;
 /* carga por pessoa (tarefas em aberto); "" = sem responsável */
-/* [nome, total, prováveis] */
-const CARGA=(()=>{const cont={};abertas.forEach(t=>{const n=t.q?canon(t.q):"";cont[n]=cont[n]||[0,0];cont[n][0]++;if(t.q&&t.qp)cont[n][1]++;});
- return Object.entries(cont).map(([n,[c,p]])=>[n,c,p]).sort((a,b)=>(a[0]===""?1:b[0]===""?-1:b[1]-a[1]));})();
+const CARGA=(()=>{const cont={};abertas.forEach(t=>{const n=t.q?canon(t.q):"";cont[n]=(cont[n]||0)+1;});
+ return Object.entries(cont).sort((a,b)=>(a[0]===""?1:b[0]===""?-1:b[1]-a[1]));})();
 
 /* cabeçalho */
 (()=>{const [ai,mi,di]=SEMANA.inicio.split("-").map(Number),[af,mf,df]=SEMANA.fim.split("-").map(Number);
@@ -644,7 +634,7 @@ const kpi=(cls,ic,lab,val,sub,go)=>`<button type="button" class="kpi panel lift$
 $("kpis").innerHTML=
  kpi("",IC.mic16,"Reuniões analisadas",Object.keys(M).length,`<span class="ks">${hm(totMin)} em chamada</span>`,"reunioes")+
  kpi("",IC.dec16,"Decisões tomadas",DECS.length,`<span class="ks">com minuto na gravação</span>`,"fontes")+
- kpi(semResp?" warn":"",IC.list16,"Tarefas em aberto",abertas.length,(semResp?`<em>${semResp} sem responsável</em>`:`<span class="ks">todas com responsável</span>`)+(nProv?`<span class="ks">${nProv} com responsável provável</span>`:""),"plano:todas")+
+ kpi(semResp?" warn":"",IC.list16,"Tarefas em aberto",abertas.length,semResp?`<em>${semResp} sem responsável</em>`:`<span class="ks">todas com responsável</span>`,"plano:todas")+
  kpi(nVenc?" crit":"",IC.cal16,"Tarefas vencidas",nVenc,`<span class="ks">${nVenc?"rever prazos":"nenhum prazo falhado"}</span>`,nVenc?"plano:venc":"plano")+
  kpi(nBloq+nAt?" warn":"",IC.alert16,"Pontos de atenção",nBloq+nAt,nBloq?`<em>${nBloq} bloqueados</em>`:`<span class="ks">de ${CARDS.length} clientes e projetos</span>`,"clientes:atencao");
 
@@ -657,12 +647,10 @@ $("kpis").innerHTML=
  const CG={venc:"var(--bad)",prox:"var(--or)",depois:"var(--tq)",semdata:"var(--none)",feita:"var(--tq)"};
  $("ov-prazo").innerHTML=`<h3>Prazos das tarefas</h3><p>${TASKS.length} tarefas, ${abertas.length} em aberto. Clica para filtrar.</p>`+
   (gs.length?`<div class="lg">${gs.map(([g,,,curto])=>`<button type="button" data-go="plano:${g}"><span class="d" style="background:${CG[g]}"></span>${curto}<b>${nGr(g)}</b><small></small><span class="mb"><i style="width:${nGr(g)/mx*100}%;background:${CG[g]}"></i></span></button>`).join("")}</div>`:`<p class="vazio">Nenhuma tarefa identificada.</p>`);
- const nab=abertas.length,conf=nab-semResp-nProv,pc=nab?Math.round((nab-semResp)/nab*100):100,C=2*Math.PI*34;
- const arc=(cor,ini,fr)=>`<circle class="ar" cx="48" cy="48" r="34" fill="none" stroke="${cor}" stroke-width="12" stroke-dasharray="${C*fr} ${C}" stroke-dashoffset="${C*fr}" data-o="0" transform="rotate(${-90+ini*360} 48 48)"/>`;
+ const com=abertas.length-semResp,pc=abertas.length?Math.round(com/abertas.length*100):100,C=2*Math.PI*34;
  $("ov-resp").innerHTML=`<h3>Tarefas com responsável</h3><p>Tarefas em aberto com dono atribuído.</p>`+
-  `<div class="donut"><svg width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="${pc}% com responsável"><circle cx="48" cy="48" r="34" fill="none" stroke="var(--surf3)" stroke-width="12"/>${nab?arc("var(--tq)",0,conf/nab)+arc("var(--or)",conf/nab,nProv/nab):""}</svg>`+
-  `<div><div class="dv">${pc}%</div><p class="dl">${nab?`<span class="dk" style="--k:var(--tq)"></span>${conf} confirmados<br>${nProv?`<span class="dk" style="--k:var(--or)"></span>${nProv} prováveis<br>`:""}<span class="dk" style="--k:var(--surf3)"></span>${semResp} sem responsável`:"Sem tarefas em aberto."}</p>`+
-  `<div class="dbs">${nProv?`<button type="button" class="btn ghost" data-go="plano:pv">Ver prováveis</button>`:""}${semResp?`<button type="button" class="btn ghost" data-go="plano:sr">Ver sem responsável</button>`:""}</div></div></div>`;
+  `<div class="donut"><svg width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="${pc}% com responsável"><circle cx="48" cy="48" r="34" fill="none" stroke="var(--orbg)" stroke-width="12"/><circle class="ar" cx="48" cy="48" r="34" fill="none" stroke="var(--tq)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" data-o="${C*(1-pc/100)}" transform="rotate(-90 48 48)"/></svg>`+
+  `<div><div class="dv">${pc}%</div><p class="dl">${abertas.length?`${com} de ${abertas.length} com responsável.`:"Sem tarefas em aberto."}${semResp?` <button type="button" class="btn ghost" style="margin-top:8px;padding:5px 10px;font-size:12px" data-go="plano:sr">Ver ${semResp} sem responsável</button>`:""}</p></div></div>`;
  requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".donut .ar").forEach(c=>c.style.strokeDashoffset=c.dataset.o)));})();
 
 /* resultados em destaque */
@@ -700,7 +688,7 @@ $("cards-n").textContent=`${CARDS.length} no total`;
 $("cards").innerHTML=cartoes.map(c=>{
  const ts=abertas.filter(t=>t.k===c.id).sort(porPrazo),t=ts[0];
  const ds=DECS.filter(d=>d.c===c.id);
- const nx=t?`<div class="nx"><p class="nl">Próxima ação</p><p>${INF(t.o)}</p><div class="meta">${quem(t.q,t.qp)}${prazo(t.p)}</div></div>`
+ const nx=t?`<div class="nx"><p class="nl">Próxima ação</p><p>${INF(t.o)}</p><div class="meta">${quem(t.q)}${prazo(t.p)}</div></div>`
   :(c.e==="bloq"||c.e==="atencao")?`<div class="nx none">Sem próxima ação definida</div>`:"";
  return `<details class="card panel lift" data-e="${c.e}" id="card-${c.id}" style="--c:${COR[c.e]||"var(--none)"}"><summary>
   <div class="ch"><h3>${c.h}</h3><span class="chip ${SC[c.e]||""}">${EST[c.e]||c.e}</span></div>
@@ -715,7 +703,7 @@ $("cfilt").innerHTML=`<button type="button" data-f="" aria-pressed="true">Todos 
 /* plano de ação */
 $("tasks-n").textContent=`${abertas.length} em aberto`;
 const linhaT=t=>{const g=grupo(t);
- return `<li class="task" data-g="${g}" data-sr="${t.q?0:1}" data-pv="${t.q&&t.qp?1:0}" data-q="${t.q?canon(t.q):""}">${av(t.q,t.qp)}<div><p>${INF(t.o)}</p><div class="meta">${quem(t.q,t.qp)}${t.feita?"":prazo(t.p)}<span class="ic">${IC.tag}${t.k&&cardById[t.k]?cardById[t.k].h:"Interno"}</span>${t.s?`<span>${INF(t.s)}</span>`:""}${t.desde&&t.desde<SEMANA.inicio?`<span class="ant">Aberta desde ${ddmm(t.desde)}</span>`:""}${t.feita?`<span class="ic">${IC.ok}Confirmada em ${src(t.feita)}</span>`:""}</div></div>${src(t.r)}</li>`;};
+ return `<li class="task" data-g="${g}" data-sr="${t.q?0:1}" data-q="${t.q?canon(t.q):""}">${av(t.q)}<div><p>${INF(t.o)}</p><div class="meta">${quem(t.q)}${t.feita?"":prazo(t.p)}<span class="ic">${IC.tag}${t.k&&cardById[t.k]?cardById[t.k].h:"Interno"}</span>${t.s?`<span>${INF(t.s)}</span>`:""}${t.desde&&t.desde<SEMANA.inicio?`<span class="ant">Aberta desde ${ddmm(t.desde)}</span>`:""}${t.feita?`<span class="ic">${IC.ok}Confirmada em ${src(t.feita)}</span>`:""}</div></div>${src(t.r)}</li>`;};
 $("tasks").innerHTML=GR.map(([g,nome,aberto])=>{const ts=TASKS.filter(t=>grupo(t)===g).sort(porPrazo);if(!ts.length)return"";
  return `<details class="tg panel" data-grp="${g}"${aberto?" open":""}><summary><span class="dot g-${g}"></span>${nome} <span class="cnt">${ts.length}</span></summary><ul class="tl">${ts.map(linhaT).join("")}</ul></details>`;}).join("")||`<p class="vazio">Nenhuma tarefa identificada.</p>`;
 /* filtro por estado (prazo) */
@@ -723,11 +711,10 @@ const TF=[["","Todas",abertas.length],...GR.map(([g,,,curto])=>[g,curto,g==="fei
 $("tfilt").innerHTML=`<span class="cl">Estado</span>`+TF.filter(f=>!f[0]||f[2]).map(([f,n,c],i)=>`<button type="button" data-f="${f}" aria-pressed="${i===0}">${n} <b>${c}</b></button>`).join("");
 /* filtro por responsável ("*" = todas as pessoas, "" = sem responsável) */
 $("pfilt").innerHTML=`<span class="cl">Responsável</span><button type="button" data-p="*" aria-pressed="true">Todas as pessoas <b>${abertas.length}</b></button>`+
- CARGA.map(([n,c])=>`<button type="button" data-p="${n}" aria-pressed="false">${av(n)}${n||"Sem responsável"} <b>${c}</b></button>`).join("")+
- (nProv?`<button type="button" data-p="~" aria-pressed="false"><i style="background:var(--or)"></i>Responsável provável <b>${nProv}</b></button>`:"");
+ CARGA.map(([n,c])=>`<button type="button" data-p="${n}" aria-pressed="false">${av(n)}${n||"Sem responsável"} <b>${c}</b></button>`).join("");
 /* carga por pessoa (clicar filtra o plano) */
-$("load").innerHTML=`<h3>Tarefas por pessoa</h3><p>Tarefas em aberto atribuídas nesta semana. Clica para filtrar.</p>`+(CARGA.length?(()=>{const mx=Math.max(1,...CARGA.map(x=>x[1]));return CARGA.map(([n,c,pv])=>
- `<button type="button" class="lr${n?"":" sr"}" data-p="${n}" aria-pressed="false">${av(n)}<span class="nm">${n||"Sem responsável"}${pv?` <small class="pvn">${pv} ${pv===1?"provável":"prováveis"}</small>`:""}</span><span class="ct">${c}</span><span class="bar"><i style="width:${Math.round(c/mx*100)}%;${n?`background:${corP(n)}`:""}"></i></span></button>`).join("");})():`<p class="vazio">Sem tarefas em aberto.</p>`);
+$("load").innerHTML=`<h3>Tarefas por pessoa</h3><p>Tarefas em aberto atribuídas nesta semana. Clica para filtrar.</p>`+(CARGA.length?(()=>{const mx=Math.max(1,...CARGA.map(x=>x[1]));return CARGA.map(([n,c])=>
+ `<button type="button" class="lr${n?"":" sr"}" data-p="${n}" aria-pressed="false">${av(n)}<span class="nm">${n||"Sem responsável"}</span><span class="ct">${c}</span><span class="bar"><i style="width:${Math.round(c/mx*100)}%;${n?`background:${corP(n)}`:""}"></i></span></button>`).join("");})():`<p class="vazio">Sem tarefas em aberto.</p>`);
 
 /* análise */
 $("bem-h").innerHTML=`<span class="hi">${IC.ok16}</span>Correu bem`;
@@ -750,7 +737,7 @@ $("fin").innerHTML=
   <li><strong>Resultados em destaque:</strong> números ditos numa reunião, com o minuto de onde vêm.</li>
   <li><strong>Resumo por reunião:</strong> junta os clientes e projetos, as decisões e as tarefas que têm origem em cada reunião.</li>
   <li><strong>Decisões:</strong> só o que ficou fechado de forma explícita numa reunião.</li>
-  <li><strong>Tarefas:</strong> pedidos com um resultado concreto. Têm responsável confirmado quando alguém o diz ou quando havia uma única pessoa da Outlier na chamada. Nos outros casos, o responsável aparece como "provável": primeiro o indicado nos itens de ação do Fireflies, depois a pessoa que mencionou a tarefa na reunião. Só aparecem como concluídas com confirmação numa reunião.</li>
+  <li><strong>Tarefas:</strong> pedidos com um resultado concreto. Só têm responsável quando alguém o diz ou quando havia uma única pessoa da Outlier na chamada. Só aparecem como concluídas com confirmação numa reunião.</li>
   <li><strong>Prioridades e pergunta:</strong> leitura da revisão, não algo decidido numa reunião.</li>
   <li><strong>Fontes:</strong> cada item liga à reunião de onde vem. Decisões e números levam também o minuto.</li>
   <li><strong>Marcas:</strong> sem marca, foi dito; "inferência" é uma leitura da revisão; "a confirmar" é um nome, responsável ou minuto que a transcrição não permite confirmar.</li></ul>`+
@@ -791,7 +778,7 @@ function aplicar(){
  let nt=0;document.querySelectorAll("#tasks .tg").forEach(gd=>{let vis=0;
   gd.querySelectorAll(".task").forEach(li=>{const g=li.dataset.g;
    const okG=!F.tg||li.dataset.g===F.tg;
-   const okP=F.tp==="*"||(F.tp==="~"?li.dataset.pv==="1"&&g!=="feita":li.dataset.q===F.tp&&(g!=="feita"||F.tg==="feita"));
+   const okP=F.tp==="*"||(li.dataset.q===F.tp&&(g!=="feita"||F.tg==="feita"));
    const v=okG&&okP&&ok(li);li.hidden=!v;if(v){vis++;if(q)achados.push(li);}});
   gd.hidden=!vis;if((F.tg||F.tp!=="*"||q)&&vis&&!gd.open){gd.open=true;if(q&&!F.tg&&F.tp==="*")abertosBusca.push(gd);}
   gd.querySelector(".cnt").textContent=vis;nt+=vis;});
@@ -832,7 +819,7 @@ $("load").addEventListener("click",ev=>{const b=ev.target.closest(".lr");if(!b)r
 const ir=id=>{const s=$(id);if(!s)return;if(id==="fontes")s.querySelector(".fontes").open=true;s.scrollIntoView({behavior:"smooth",block:"start"});};
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-go]");if(!b)return;const [id,f]=b.dataset.go.split(":");
  if(id==="clientes"&&f){F.ce=$("cfilt").querySelector(`[data-f="${f}"]`)?f:"";aplicar();}
- if(id==="plano"&&f){if(f==="sr"||f==="pv"){F.tg="";F.tp=f==="sr"?"":"~";}else{F.tg=f!=="todas"&&$("tfilt").querySelector(`[data-f="${f}"]`)?f:"";F.tp="*";}aplicar();}
+ if(id==="plano"&&f){if(f==="sr"){F.tg="";F.tp="";}else{F.tg=f!=="todas"&&$("tfilt").querySelector(`[data-f="${f}"]`)?f:"";F.tp="*";}aplicar();}
  ir(id);});
 
 /* navegação: marca a secção visível, abre as fontes e fecha o menu em ecrãs pequenos */
@@ -878,7 +865,7 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-go]");if
   if(!EST[c.e])av.push(`Cartão "${c.h}": estado "${c.e}" desconhecido.`);
   if(!c.r||!c.r.length)av.push(`Cartão "${c.h}": sem fonte.`);(c.r||[]).forEach(r=>ref(r,`Cartão "${c.h}"`));});
  TASKS.forEach(t=>{const o=`Tarefa "${cur(t.o)}"`;ref(t.r,o);data(t.p,o);data(t.desde,o);
-  if(t.k&&!cardById[t.k])av.push(`${o}: o cartão "${t.k}" não existe.`);if(t.qp&&!t.q)av.push(`${o}: tem qp mas não tem responsável (q).`);if(t.qp&&!QP[t.qp])av.push(`${o}: qp "${t.qp}" desconhecido (usar fireflies ou mencionou).`);if(t.feita)ref(t.feita,o+" (confirmação)",true);});
+  if(t.k&&!cardById[t.k])av.push(`${o}: o cartão "${t.k}" não existe.`);if(t.feita)ref(t.feita,o+" (confirmação)",true);});
  DECS.forEach(d=>{ref([d.m,d.t],`Decisão "${cur(d.x)}"`,true);if(d.c&&!cardById[d.c])av.push(`Decisão "${cur(d.x)}": o cartão "${d.c}" não existe.`);});
  [...BEM.map(b=>["Correu bem",b.t,b.r]),...PADROES.map(p=>["Padrão",p.h,p.r])].forEach(([tp,t,r])=>{if(!r.length)av.push(`${tp} "${cur(t)}": sem fonte.`);r.forEach(x=>ref(x,`${tp} "${cur(t)}"`));});
  const cl=document.querySelector(".wrap").cloneNode(true);cl.querySelector(".fontes").remove();
@@ -898,8 +885,8 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-go]");if
 $("b-csv").addEventListener("click",()=>{
  const nomeG=Object.fromEntries(GR.map(([g,,,c])=>[g,c]));
  const esc=v=>{v=String(v??"").replace(/\[inferência\]/g,"(inferência)");return /[";\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v;};
- const L=[["Tarefa","Responsável","Responsável provável","Prazo","Estado","Cliente ou projeto","Reunião","Minuto","Nota","Aberta desde","Confirmada em"]];
- [...TASKS].sort(porPrazo).forEach(t=>L.push([t.o,t.q?canon(t.q):"Sem responsável",t.q&&t.qp?(t.qp==="fireflies"?"Sim, itens de ação do Fireflies":"Sim, mencionou a tarefa"):"",t.p||"",nomeG[grupo(t)],t.k&&cardById[t.k]?cardById[t.k].h:"Interno",
+ const L=[["Tarefa","Responsável","Prazo","Estado","Cliente ou projeto","Reunião","Minuto","Nota","Aberta desde","Confirmada em"]];
+ [...TASKS].sort(porPrazo).forEach(t=>L.push([t.o,t.q?canon(t.q):"Sem responsável",t.p||"",nomeG[grupo(t)],t.k&&cardById[t.k]?cardById[t.k].h:"Interno",
   t.r&&M[t.r[0]]?M[t.r[0]].nome:"",t.r&&t.r[1]||"",t.s||"",t.desde||"",t.feita&&M[t.feita[0]]?`${M[t.feita[0]].nome} ${t.feita[1]||""}`.trim():""]));
  const b=new Blob(["﻿"+L.map(r=>r.map(esc).join(";")).join("\r\n")],{type:"text/csv;charset=utf-8"});
  const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`tarefas_${SEMANA.inicio}_${SEMANA.fim}.csv`;document.body.append(a);a.click();
